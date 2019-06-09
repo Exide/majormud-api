@@ -1,13 +1,5 @@
-# MajorMUD API
-An HTTP REST interface for accessing versioned MajorMUD information.
-
-## Example
-
-```bash
-$ curl -X GET -H '{"Content-Type": "application/json"}' https://api.majormud.io/v/latest/items/bone-handled%20headcutter
-```
-```json
-{
+[
+  {
     "id": 258,
     "name": "bone-handled headcutter",
     "description": "This is a massive, double-handed axe with a shaft made out of the petrified bone of some unknown creature. Its blade is huge and heavy, and its single edge appears to be razor-sharp.",
@@ -30,10 +22,10 @@ $ curl -X GET -H '{"Content-Type": "application/json"}' https://api.majormud.io/
     "hit_magic": 1,
     "quality": 100,
     "dropped_by": [
-        { "id": 60, "chance": 0.25 }
+      { "id": 60, "chance": 0.25 }
     ],
     "can_be_sold_at": [
-        { "id": 88 }
+      { "id": 88 }
     ]
-}
-```
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "name": "majormud-api",
+  "description": "An HTTP REST interface for accessing versioned MajorMUD information.",
+  "version": "0.0.1",
+  "author": "Ryan Zander <exide@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Exide/majormud-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Exide/majormud-api/issues"
+  },
+  "homepage": "https://github.com/Exide/majormud-api#readme"
+}
