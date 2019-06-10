@@ -2,7 +2,7 @@ resource "aws_lambda_function" "get_item_by_name" {
   function_name = "get-item-by-name"
   runtime = "nodejs8.10"
   handler = "index.handler"
-  filename = "../dist/get-item-by-name.zip"
+  filename = "lambda.zip"
   timeout = 60
   role = aws_iam_role.lambda.arn
   tags = { MajorMUD_API = "" }
