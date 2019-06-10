@@ -46,7 +46,7 @@ resource "aws_api_gateway_integration" "get_item_by_name" {
   resource_id = aws_api_gateway_resource.item_name.id
   http_method = aws_api_gateway_method.get_item_by_name.http_method
   integration_http_method = "POST"
-  type = "AWS"
+  type = "AWS_PROXY"
   uri = aws_lambda_function.get_item_by_name.invoke_arn
 }
 
