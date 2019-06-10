@@ -11,5 +11,12 @@
   "bugs": {
     "url": "https://github.com/Exide/majormud-api/issues"
   },
-  "homepage": "https://github.com/Exide/majormud-api#readme"
+  "homepage": "https://github.com/Exide/majormud-api#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.471.0",
+    "gulp": "^4.0.2",
+    "gulp-install": "^1.1.0",
+    "gulp-tap": "^1.0.1",
+    "gulp-zip": "^5.0.0"
+  }
 }
