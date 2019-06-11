@@ -5,7 +5,9 @@ resource "aws_lambda_function" "get_item_by_name" {
   filename = "lambda.zip"
   timeout = 60
   role = aws_iam_role.lambda.arn
-  tags = { MajorMUD_API = "" }
+  tags = {
+    topic = "MajorMUD"
+  }
 }
 
 resource "aws_lambda_permission" "get_item_by_name" {
