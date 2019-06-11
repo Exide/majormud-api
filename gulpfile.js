@@ -1,4 +1,5 @@
 const { task, series, src, dest } = require('gulp');
+const rename = require('gulp-rename');
 const install = require('gulp-install');
 const zip = require('gulp-zip');
 const del = require('del');
@@ -24,16 +25,22 @@ task('clean', () => {
   return del(artifacts);
 });
 
-task('build', () => {
-  const options = { base: '.' };
+task('js', () => {
   const functionBuildDir = `${buildDir}/${functionName}`;
-  const files = ['package.json', `src/${functionName}.js`];
-  return src(files, options)
+  const functionFile = path.resolve('src', `${functionName}.js`);
+  return src(functionFile)
+    .pipe(rename('index.js'))
+    .pipe(dest(functionBuildDir));
+});
+
+task('npm', () => {
+  const functionBuildDir = `${buildDir}/${functionName}`;
+  return src('package.json')
     .pipe(dest(functionBuildDir))
     .pipe(install({ production: true }));
 });
 
-task('dist', () => {
+task('zip', () => {
   const input = `${buildDir}/${functionName}/**/*`;
   const output = `${functionName}.zip`;
   return src(input)
@@ -41,7 +48,7 @@ task('dist', () => {
     .pipe(dest(distDir));
 });
 
-task('default', series('clean', 'build', 'dist'));
+task('default', series('clean', 'js', 'npm', 'zip'));
 
 task('upload', async () => {
   const filename = path.resolve(distDir, `${functionName}.zip`);
