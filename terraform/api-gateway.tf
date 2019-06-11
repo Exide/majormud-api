@@ -4,9 +4,6 @@ resource "aws_api_gateway_rest_api" "majormud_api" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
-  tags = {
-    topic = "MajorMUD"
-  }
 }
 
 resource "aws_api_gateway_resource" "version" {
