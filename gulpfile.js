@@ -1,40 +1,57 @@
-const pkg = require('./package');
-const { task, src, dest } = require('gulp');
+const { task, series, src, dest } = require('gulp');
 const install = require('gulp-install');
 const zip = require('gulp-zip');
-const aws = require('aws-sdk');
+const del = require('del');
 const path = require('path');
+const minimist = require('minimist');
+const aws = require('aws-sdk');
+const fs = require('fs');
+const util = require('util');
+const readFile = util.promisify(fs.readFile);
 
-const buildDirRoot = path.resolve('build');
+const buildDir = path.resolve('build');
 const distDir = path.resolve('dist');
 
-task('build:get-item-by-name', async () => await buildFunction('get-item-by-name'));
-
-async function buildFunction(name) {
-  await copyFilesToBuildDir(name);
-  await installDependencies(name);
-  await compressFunction(name);
+const arguments = minimist(process.argv.slice(2), { string: 'fn' });
+if (!arguments.fn) {
+  console.error('Missing a required parameter: --fn <name>');
+  return;
 }
+const functionName = arguments.fn;
 
-async function copyFilesToBuildDir(functionName) {
+task('clean', () => {
+  const artifacts = [ `build/${functionName}`, `dist/${functionName}.zip` ];
+  return del(artifacts);
+});
+
+task('build', () => {
   const options = { base: '.' };
-  const buildDir = getFunctionBuildDir(functionName);
-  const files = [`src/${functionName}.js`];
-  return src(files, options).pipe(dest(buildDir));
-}
+  const functionBuildDir = `${buildDir}/${functionName}`;
+  const files = ['package.json', `src/${functionName}.js`];
+  return src(files, options)
+    .pipe(dest(functionBuildDir))
+    .pipe(install({ production: true }));
+});
 
-async function installDependencies(functionName) {
-  const buildDir = getFunctionBuildDir(functionName);
-  return src('package.json').pipe(dest(buildDir)).pipe(install({ production: true }));
-}
-
-function getFunctionBuildDir(functionName) {
-  return path.resolve(buildDirRoot, functionName);
-}
-
-async function compressFunction(functionName) {
-  const buildDir = getFunctionBuildDir(functionName);
-  const input = `${buildDir}/**/*`;
+task('dist', () => {
+  const input = `${buildDir}/${functionName}/**/*`;
   const output = `${functionName}.zip`;
-  return src(input).pipe(zip(output)).pipe(dest(distDir));
-}
+  return src(input)
+    .pipe(zip(output))
+    .pipe(dest(distDir));
+});
+
+task('default', series('clean', 'build', 'dist'));
+
+task('upload', async () => {
+  const filename = path.resolve(distDir, `${functionName}.zip`);
+  const parameters = {
+    FunctionName: functionName,
+    ZipFile: await readFile(filename)
+  };
+
+  const lambda = new aws.Lambda({ region: 'us-west-2' });
+  const result = await lambda.updateFunctionCode(parameters).promise();
+
+  console.info(result);
+});
