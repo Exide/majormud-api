@@ -3,6 +3,9 @@ resource "aws_dynamodb_table" "races" {
   hash_key = "hash"
   range_key = "version"
 
+  write_capacity = 25
+  read_capacity = 25
+
   attribute {
     name = "hash"
     type = "S"
@@ -22,6 +25,9 @@ resource "aws_dynamodb_table" "classes" {
   name = "majormud-classes"
   hash_key = "hash"
   range_key = "version"
+
+  write_capacity = 25
+  read_capacity = 25
 
   attribute {
     name = "hash"
@@ -43,6 +49,9 @@ resource "aws_dynamodb_table" "rooms" {
   hash_key = "hash"
   range_key = "version"
 
+  write_capacity = 25
+  read_capacity = 25
+
   attribute {
     name = "hash"
     type = "S"
@@ -63,6 +72,9 @@ resource "aws_dynamodb_table" "npcs" {
   hash_key = "hash"
   range_key = "version"
 
+  write_capacity = 25
+  read_capacity = 25
+
   attribute {
     name = "hash"
     type = "S"
@@ -82,6 +94,9 @@ resource "aws_dynamodb_table" "items" {
   name = "majormud-items"
   hash_key = "hash"
   range_key = "version"
+
+  write_capacity = 25
+  read_capacity = 25
 
   attribute {
     name = "hash"
@@ -104,6 +119,9 @@ resource "aws_dynamodb_table" "spells" {
   hash_key = "hash"
   range_key = "version"
 
+  write_capacity = 25
+  read_capacity = 25
+
   attribute {
     name = "hash"
     type = "S"
@@ -123,6 +141,9 @@ resource "aws_dynamodb_table" "shops" {
   name = "majormud-shops"
   hash_key = "hash"
   range_key = "version"
+
+  write_capacity = 25
+  read_capacity = 25
 
   attribute {
     name = "hash"
