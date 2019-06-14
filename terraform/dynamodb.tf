@@ -95,8 +95,8 @@ resource "aws_dynamodb_table" "items" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  write_capacity = 1
+  read_capacity = 1
 
   attribute {
     name = "id"
@@ -117,6 +117,8 @@ resource "aws_dynamodb_table" "items" {
     hash_key = "name"
     name = "name"
     projection_type = "ALL"
+    write_capacity = 1
+    read_capacity = 1
   }
 
   tags = {
