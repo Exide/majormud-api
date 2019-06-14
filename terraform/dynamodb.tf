@@ -108,9 +108,19 @@ resource "aws_dynamodb_table" "items" {
     type = "S"
   }
 
+  attribute {
+    name = "name"
+    type = "S"
+  }
+
+  global_secondary_index {
+    hash_key = "name"
+    name = "name"
+    projection_type = "ALL"
+  }
+
   tags = {
     topic = "MajorMUD"
-    version = "1.11p"
   }
 }
 
