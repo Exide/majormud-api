@@ -114,8 +114,9 @@ resource "aws_dynamodb_table" "items" {
   }
 
   global_secondary_index {
-    hash_key = "name"
     name = "name"
+    hash_key = "name"
+    range_key = "version"
     projection_type = "ALL"
     write_capacity = 1
     read_capacity = 1
