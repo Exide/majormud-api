@@ -1,5 +1,5 @@
 const aws = require('aws-sdk');
-const dynamodb = new aws.DynamoDB();
+const dbClient = new aws.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
   const version = event.pathParameters.version;
@@ -17,11 +17,17 @@ exports.handler = async (event) => {
 
 async function lookupByName(name, version) {
   const parameters = {
-    TableName: "majormud-items",
-    Key: {
-      version: { S: version },
-      name: { S: name }
+    TableName: 'majormud-items',
+    IndexName: 'name',
+    KeyConditionExpression: '#n = :n and #v = :v',
+    ExpressionAttributeNames: {
+      '#n': 'name',
+      '#v': 'version'
+    },
+    ExpressionAttributeValues: {
+      ':n': name,
+      ':v': version
     }
   };
-  return dynamodb.getItem(parameters).promise();
+  return dbClient.query(parameters).promise();
 }
