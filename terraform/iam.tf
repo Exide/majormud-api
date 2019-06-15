@@ -40,13 +40,18 @@ data "aws_iam_policy_document" "majormud_data_access" {
       "dynamodb:UpdateItem"
     ]
     resources = [
-      aws_dynamodb_table.races.arn,
-      aws_dynamodb_table.classes.arn,
-      aws_dynamodb_table.rooms.arn,
-      aws_dynamodb_table.npcs.arn,
-      aws_dynamodb_table.items.arn,
-      aws_dynamodb_table.spells.arn,
-      aws_dynamodb_table.shops.arn
+      "arn:aws:dynamodb:${var.region}:${var.account_id}:table/majormud-*"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:Scan",
+      "dynamodb:Query"
+    ]
+    resources = [
+      "arn:aws:dynamodb:${var.region}:${var.account_id}:table/majormud-*/index/*"
     ]
   }
 }
