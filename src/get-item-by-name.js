@@ -4,18 +4,21 @@ const dbClient = new aws.DynamoDB.DocumentClient();
 exports.handler = async (event) => {
   const version = event.pathParameters.version;
   const itemName = decodeURI(event.pathParameters.item_name);
+  const items = await getItemsByName(itemName, version);
 
-  const item = await lookupByName(itemName, version);
-  if (!item) return { statusCode: 404 };
+  if (items.length < 1) {
+    return { statusCode: 404 };
+  } else {
+    return {
+      statusCode: 200,
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(items)
+    }
+  }
 
-  return {
-    statusCode: 200,
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(item)
-  };
 };
 
-async function lookupByName(name, version) {
+async function getItemsByName(name, version) {
   const parameters = {
     TableName: 'majormud-items',
     IndexName: 'name',
@@ -29,5 +32,6 @@ async function lookupByName(name, version) {
       ':v': version
     }
   };
-  return dbClient.query(parameters).promise();
+  const { Items } = await dbClient.query(parameters).promise();
+  return Items;
 }
