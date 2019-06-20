@@ -2,6 +2,10 @@ const aws = require('aws-sdk');
 const dbClient = new aws.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
+  if (isInvalidInput(event)) {
+    return { statusCode: 400 };
+  }
+
   const version = event.pathParameters.version;
   const itemName = decodeURI(event.pathParameters.item_name);
   const items = await getItemsByName(itemName, version);
@@ -34,4 +38,12 @@ async function getItemsByName(name, version) {
   };
   const { Items } = await dbClient.query(parameters).promise();
   return Items;
+}
+
+function isInvalidInput(event) {
+  const noInput = !event;
+  const emptyInput= !event.pathParameters;
+  const noVersion = !event.pathParameters.version;
+  const noItemName = !event.pathParameters.item_name;
+  return noInput || emptyInput || noVersion || noItemName;
 }
