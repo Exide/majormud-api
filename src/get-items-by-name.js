@@ -6,9 +6,9 @@ exports.handler = async (event) => {
     return { statusCode: 400 };
   }
 
-  const version = event.pathParameters.version;
-  const itemName = decodeURI(event.pathParameters.item_name);
-  const items = await getItemsByName(itemName, version);
+  const version = decodeURI(event.pathParameters.version);
+  const name = decodeURI(event.pathParameters.name);
+  const items = await getItemsByName(name, version);
 
   if (items.length < 1) {
     return { statusCode: 404 };
@@ -26,14 +26,14 @@ async function getItemsByName(name, version) {
   const parameters = {
     TableName: 'majormud-items',
     IndexName: 'name',
-    KeyConditionExpression: '#n = :n and #v = :v',
+    KeyConditionExpression: '#name = :name and #version = :version',
     ExpressionAttributeNames: {
-      '#n': 'name',
-      '#v': 'version'
+      '#name': 'name',
+      '#version': 'version'
     },
     ExpressionAttributeValues: {
-      ':n': name,
-      ':v': version
+      ':name': name,
+      ':version': version
     }
   };
   const { Items } = await dbClient.query(parameters).promise();
@@ -44,6 +44,6 @@ function isInvalidInput(event) {
   const noInput = !event;
   const emptyInput= !event.pathParameters;
   const noVersion = !event.pathParameters.version;
-  const noItemName = !event.pathParameters.item_name;
-  return noInput || emptyInput || noVersion || noItemName;
+  const noName = !event.pathParameters.name;
+  return noInput || emptyInput || noVersion || noName;
 }
