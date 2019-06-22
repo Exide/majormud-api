@@ -43,7 +43,7 @@ resource "aws_api_gateway_integration_response" "get_items_by_name" {
   status_code = aws_api_gateway_method_response.get_items_by_name.status_code
 }
 
-resource "aws_api_gateway_deployment" "production" {
+resource "aws_api_gateway_deployment" "get_items_by_name" {
   depends_on = ["aws_api_gateway_integration.get_items_by_name"]
   rest_api_id = aws_api_gateway_rest_api.majormud_api.id
   stage_name = "production"
