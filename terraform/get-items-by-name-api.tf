@@ -8,7 +8,7 @@ resource "aws_api_gateway_resource" "items" {
 
 resource "aws_api_gateway_resource" "name" {
   rest_api_id = aws_api_gateway_rest_api.majormud_api.id
-  parent_id = aws_api_gateway_resource.item.id
+  parent_id = aws_api_gateway_resource.items.id
   path_part = "{name}"
 }
 
