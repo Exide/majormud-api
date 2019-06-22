@@ -31,7 +31,6 @@ async function getItemById(id, version) {
     }
   };
   const response = await dbClient.get(parameters).promise();
-  console.log(response);
   return response.Item;
 }
 
