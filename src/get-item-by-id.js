@@ -7,7 +7,7 @@ exports.handler = async (event) => {
   }
 
   const version = decodeURI(event.pathParameters.version);
-  const id = decodeURI(event.pathParameters.id);
+  const id = parseInt(decodeURI(event.pathParameters.id));
   const item = await getItemById(id, version);
 
   if (!item) {
