@@ -3,8 +3,7 @@ resource "aws_dynamodb_table" "races" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -26,8 +25,7 @@ resource "aws_dynamodb_table" "classes" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -49,8 +47,7 @@ resource "aws_dynamodb_table" "rooms" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -72,8 +69,7 @@ resource "aws_dynamodb_table" "npcs" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -95,8 +91,7 @@ resource "aws_dynamodb_table" "items" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 1
-  read_capacity = 1
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -132,8 +127,7 @@ resource "aws_dynamodb_table" "spells" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
@@ -155,8 +149,7 @@ resource "aws_dynamodb_table" "shops" {
   hash_key = "id"
   range_key = "version"
 
-  write_capacity = 25
-  read_capacity = 25
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "id"
