@@ -1,6 +1,6 @@
 resource "aws_lambda_function" "get_item_by_id" {
   function_name = "get-item-by-id"
-  runtime = "nodejs10.x"
+  runtime = "nodejs12.x"
   handler = "index.handler"
   filename = "lambda.zip"
   timeout = 60
