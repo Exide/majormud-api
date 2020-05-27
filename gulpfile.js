@@ -6,6 +6,7 @@ const del = require('del');
 const path = require('path');
 const minimist = require('minimist');
 const aws = require('aws-sdk');
+const mergeStream = require('merge-stream');
 const fs = require('fs');
 const util = require('util');
 const readFile = util.promisify(fs.readFile);
@@ -28,9 +29,14 @@ task('clean', () => {
 task('js', () => {
   const functionBuildDir = `${buildDir}/${functionName}`;
   const functionFile = path.resolve('src', `${functionName}.js`);
-  return src(functionFile)
+  const functionCode = src(functionFile)
     .pipe(rename('index.js'))
     .pipe(dest(functionBuildDir));
+
+  const sharedCode = src('src/response.js')
+    .pipe(dest(functionBuildDir));
+
+  return mergeStream(functionCode, sharedCode)
 });
 
 task('npm', () => {

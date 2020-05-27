@@ -1,9 +1,10 @@
 const aws = require('aws-sdk');
 const dbClient = new aws.DynamoDB.DocumentClient();
+const Response = require('./response');
 
 exports.handler = async (event) => {
   if (isInvalidInput(event)) {
-    return { statusCode: 400 };
+    return Response.BadRequest();
   }
 
   const version = decodeURI(event.pathParameters.version);
@@ -11,13 +12,9 @@ exports.handler = async (event) => {
   const items = await getItemsByName(name, version);
 
   if (items.length < 1) {
-    return { statusCode: 404 };
+    return Response.NotFound();
   } else {
-    return {
-      statusCode: 200,
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(items)
-    }
+    return Response.OK(items);
   }
 
 };
