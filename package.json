@@ -20,13 +20,16 @@
     "aws-sdk": "^2.685.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.51",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-install": "^1.1.0",
     "gulp-rename": "^2.0.0",
     "gulp-tap": "^2.0.0",
+    "gulp-typescript": "^5.0.1",
     "gulp-zip": "^5.0.1",
     "merge-stream": "^2.0.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "typescript": "^3.9.3"
   }
 }

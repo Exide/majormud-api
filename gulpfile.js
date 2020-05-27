@@ -1,4 +1,5 @@
 const { task, series, src, dest } = require('gulp');
+const typescript = require('gulp-typescript');
 const rename = require('gulp-rename');
 const install = require('gulp-install');
 const zip = require('gulp-zip');
@@ -20,23 +21,29 @@ if (!arguments.fn) {
   return;
 }
 const functionName = arguments.fn;
+const tsProject = typescript.createProject('tsconfig.json');
 
 task('clean', () => {
   const artifacts = [ `build/${functionName}`, `dist/${functionName}.zip` ];
   return del(artifacts);
 });
 
-task('js', () => {
+task('tsc', () => {
   const functionBuildDir = `${buildDir}/${functionName}`;
-  const functionFile = path.resolve('src', `${functionName}.js`);
+  const functionFile = path.resolve('src', `${functionName}.ts`);
   const functionCode = src(functionFile)
-    .pipe(rename('index.js'))
-    .pipe(dest(functionBuildDir));
+    .pipe(rename('index.ts'));
 
-  const sharedCode = src('src/response.js')
-    .pipe(dest(functionBuildDir));
+  const sharedCode = src([
+    'src/response.ts',
+    'src/majormud-object.ts',
+    'src/item.ts'
+  ]);
 
   return mergeStream(functionCode, sharedCode)
+    .pipe(tsProject())
+    .js
+    .pipe(dest(functionBuildDir));
 });
 
 task('npm', () => {
@@ -54,8 +61,6 @@ task('zip', () => {
     .pipe(dest(distDir));
 });
 
-task('default', series('clean', 'js', 'npm', 'zip'));
-
 task('upload', async () => {
   const filename = path.resolve(distDir, `${functionName}.zip`);
   const parameters = {
@@ -68,3 +73,5 @@ task('upload', async () => {
 
   console.info(result);
 });
+
+task('default', series('clean', 'tsc', 'npm', 'zip', 'upload'));
