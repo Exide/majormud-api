@@ -7,6 +7,7 @@ function buildResponse(statusCode, body, headers) {
     headers['Content-Type'] = 'application/json';
   }
 
+  console.info(`returning: ${statusCode} ${body}`);
   return { statusCode, body, headers };
 }
 
