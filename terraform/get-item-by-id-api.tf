@@ -36,7 +36,7 @@ resource "aws_api_gateway_integration" "get_item_by_id" {
 }
 
 resource "aws_api_gateway_integration_response" "get_item_by_id" {
-  depends_on = ["aws_api_gateway_integration.get_item_by_id"]
+  depends_on = [ aws_api_gateway_integration.get_item_by_id ]
   rest_api_id = aws_api_gateway_rest_api.majormud_api.id
   resource_id = aws_api_gateway_resource.id.id
   http_method = aws_api_gateway_method.get_item_by_id.http_method
@@ -44,7 +44,7 @@ resource "aws_api_gateway_integration_response" "get_item_by_id" {
 }
 
 resource "aws_api_gateway_deployment" "get_item_by_id" {
-  depends_on = ["aws_api_gateway_integration.get_item_by_id"]
+  depends_on = [ aws_api_gateway_integration.get_item_by_id ]
   rest_api_id = aws_api_gateway_rest_api.majormud_api.id
   stage_name = "production"
 }
