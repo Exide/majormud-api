@@ -3,47 +3,37 @@ An HTTP REST interface for accessing versioned MajorMUD information.
 
 ## Endpoints
 
+### Index
+```bash
+$ curl -X GET localhost
+```
+Returns [index.html](/static/index.html)
+
 ### Get item by ID
 ```bash
-$ curl -X GET localhost/v/latest/item/78
+$ curl -X GET localhost/v/:version/item/:id
 ```
-```json
-```
+Calls [get-item-by-id.ts#handler](/src/get-item-by-id.ts)
 
 ### Get items by name
 ```bash
-$ curl -X GET localhost/v/latest/items/greatsword
+$ curl -X GET localhost/v/:version/items/:name
 ```
-```json
-[
-  {
-    "id": 78,
-    "name": "greatsword",
-    "description": "This is a massive, double-handed axe with a shaft made out of the petrified bone of some unknown creature. Its blade is huge and heavy, and its single edge appears to be razor-sharp.",
-    "type": "weapon",
-    "class": "two-handed sharp",
-    "minimum_damage": 7,
-    "maximum_damage": 30,
-    "speed": 2200,
-    "level": 0,
-    "strength_desired": 80,
-    "weight": 225,
-    "armour_class": 2,
-    "damage_reduction": 0,
-    "accuracy_modifier": 5,
-    "backstab_modifier": 0,
-    "can_backstab": false,
-    "critical_modifier": 0,
-    "is_limited": true,
-    "limited_to_count": 5,
-    "hit_magic": 1,
-    "quality": 100,
-    "dropped_by": [
-      { "id": 60, "chance": 0.25 }
-    ],
-    "can_be_sold_at": [
-      { "id": 88 }
-    ]
-  }
-]
+Calls [get-items-by-name.ts#handler](/src/get-items-by-name.ts)
+
+## Development
+
+To build everything:
+```bash
+$ gulp
+```
+
+To build a specific endpoint:
+```bash
+$ gulp [function name]
+```
+
+To upload static files:
+```bash
+$ gulp static
 ```
