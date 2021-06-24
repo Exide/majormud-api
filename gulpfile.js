@@ -1,38 +1,30 @@
-const { task, series, src, dest } = require('gulp');
+const { task, series, parallel, src, dest } = require('gulp');
 const typescript = require('gulp-typescript');
 const rename = require('gulp-rename');
 const install = require('gulp-install');
 const zip = require('gulp-zip');
 const del = require('del');
 const path = require('path');
-const minimist = require('minimist');
 const aws = require('aws-sdk');
 const mergeStream = require('merge-stream');
-const fs = require('fs');
-const util = require('util');
-const readFile = util.promisify(fs.readFile);
+const fs = require('fs').promises;
 
 const buildDir = path.resolve('build');
 const distDir = path.resolve('dist');
 
-const arguments = minimist(process.argv.slice(2), { string: 'fn' });
-if (!arguments.fn) {
-  console.error('Missing a required parameter: --fn <name>');
-  return;
-}
-const functionName = arguments.fn;
 const tsProject = typescript.createProject('tsconfig.json');
 
-task('clean', () => {
+async function cleanByFunctionName(functionName) {
   const artifacts = [ `build/${functionName}`, `dist/${functionName}.zip` ];
   return del(artifacts);
-});
+}
 
-task('tsc', () => {
-  const functionBuildDir = `${buildDir}/${functionName}`;
-  const functionFile = path.resolve('src', `${functionName}.ts`);
-  const functionCode = src(functionFile)
-    .pipe(rename('index.ts'));
+async function compileByFunctionName(functionName) {
+  return new Promise((resolve, reject) => {
+    const functionBuildDir = `${buildDir}/${functionName}`;
+    const functionFile = path.resolve('src', `${functionName}.ts`);
+    const functionCode = src(functionFile)
+      .pipe(rename('index.ts'));
 
     const sharedCode = src([
       'src/response.ts',
@@ -40,38 +32,92 @@ task('tsc', () => {
       'src/item.ts'
     ]);
 
-  return mergeStream(functionCode, sharedCode)
-    .pipe(tsProject())
-    .js
-    .pipe(dest(functionBuildDir));
-});
+    mergeStream(functionCode, sharedCode)
+      .pipe(tsProject())
+      .js
+      .pipe(dest(functionBuildDir))
+      .on('end', resolve)
+      .on('error', reject)
+  });
+}
 
-task('npm', () => {
-  const functionBuildDir = `${buildDir}/${functionName}`;
-  return src('package.json')
-    .pipe(dest(functionBuildDir))
-    .pipe(install({ production: true }));
-});
+async function getDependenciesByFunctionName(functionName) {
+  return new Promise((resolve, reject) => {
+    const functionBuildDir = `${buildDir}/${functionName}`;
+    src('package.json')
+      .pipe(dest(functionBuildDir))
+      .pipe(install({ production: true }))
+      .on('end', resolve)
+      .on('error', reject)
+      .resume();
+  });
+}
 
-task('zip', () => {
-  const input = `${buildDir}/${functionName}/**/*`;
-  const output = `${functionName}.zip`;
-  return src(input)
-    .pipe(zip(output))
-    .pipe(dest(distDir));
-});
+function compressByFunctionName(functionName) {
+  return new Promise((resolve, reject) => {
+    const input = `${buildDir}/${functionName}/**/*`;
+    const output = `${functionName}.zip`;
+    return src(input)
+      .pipe(zip(output))
+      .pipe(dest(distDir))
+      .on('end', resolve)
+      .on('error', reject)
+      .resume();
+  });
+}
 
-task('upload', async () => {
+async function uploadByFunctionName(functionName) {
   const filename = path.resolve(distDir, `${functionName}.zip`);
   const parameters = {
     FunctionName: functionName,
-    ZipFile: await readFile(filename)
+    ZipFile: await fs.readFile(filename)
   };
 
   const lambda = new aws.Lambda({ region: 'us-west-2' });
   const result = await lambda.updateFunctionCode(parameters).promise();
 
   console.info(result);
+}
+
+//
+//  Public Tasks
+//
+
+task('static', async() => {
+  const s3 = new aws.S3();
+  const filenames = await fs.readdir('static');
+
+  for (let filename of filenames) {
+    const parameters = {
+      Bucket: 'majormud-api',
+      Key: filename,
+      Body: await fs.readFile(`static/${filename}`)
+    }
+
+    const result = await s3.putObject(parameters).promise();
+    console.info(result);
+  }
 });
 
-task('default', series('clean', 'tsc', 'npm', 'zip', 'upload'));
+task('get-item-by-id', series(
+  async function clean() { return cleanByFunctionName('get-item-by-id') },
+  async function compile() { return compileByFunctionName('get-item-by-id') },
+  async function getDependencies() { return getDependenciesByFunctionName('get-item-by-id') },
+  async function compress() { return compressByFunctionName('get-item-by-id') },
+  async function upload() { return uploadByFunctionName('get-item-by-id') }
+));
+
+task('get-items-by-name', series(
+  async function clean() { return cleanByFunctionName('get-items-by-name') },
+  async function compile() { return compileByFunctionName('get-items-by-name') },
+  async function getDependencies() { return getDependenciesByFunctionName('get-items-by-name') },
+  async function compress() { return compressByFunctionName('get-items-by-name') },
+  async function upload() { return uploadByFunctionName('get-items-by-name') }
+));
+
+// cleanByFunctionName, build, package, and upload everything
+task('default', parallel(
+  'get-item-by-id',
+  'get-items-by-name',
+  'static'
+));
