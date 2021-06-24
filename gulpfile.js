@@ -34,11 +34,11 @@ task('tsc', () => {
   const functionCode = src(functionFile)
     .pipe(rename('index.ts'));
 
-  const sharedCode = src([
-    'src/response.ts',
-    'src/majormud-object.ts',
-    'src/item.ts'
-  ]);
+    const sharedCode = src([
+      'src/response.ts',
+      'src/majormud.ts',
+      'src/item.ts'
+    ]);
 
   return mergeStream(functionCode, sharedCode)
     .pipe(tsProject())

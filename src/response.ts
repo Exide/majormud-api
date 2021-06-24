@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { MajorMUDObject } from './majormud-object';
+import { MajorMUDObject } from './majormud';
 
 function buildResponse(statusCode: number, body: string | object): APIGatewayProxyResult {
   const headers: { [header: string]: string } = {};

@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { OK, BadRequest, NotFound, InternalServerError } from './response';
-import Item from './item';
+import { MajorMUDItem } from './majormud';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   try {
@@ -26,7 +26,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 }
 
-async function getItemById(id: number, version: string): Promise<Item | undefined> {
+async function getItemById(id: number, version: string): Promise<MajorMUDItem | undefined> {
   const parameters = {
     TableName: 'majormud-items',
     Key: {
@@ -39,5 +39,5 @@ async function getItemById(id: number, version: string): Promise<Item | undefine
   const result = await dbClient.get(parameters).promise();
   if (result.Item === undefined) return;
 
-  return result.Item as unknown as Item;
+  return result.Item as unknown as MajorMUDItem;
 }
