@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+  <title>MajorMUD API</title>
+  <style>
+
+    body {
+      font-family: 'Georgia', serif;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    code {
+      font-family: monospace;
+      background-color: #ddd;
+      padding: 3px 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>MajorMUD API</h1>
+
+  <h2>Get Item by ID</h2>
+  <ul>
+    <li>Searches the latest official version of MajorMUD for an item by ID.</li>
+    <li>
+      <form onSubmit="suppressReloadOnEnter()">
+        <code>
+          <span class="endpoint">https://api.majormud.io/v/</span>
+          <label for="item-id-version" class="hidden">version</label>
+          <select id="item-id-version">
+            <option>latest</option>
+          </select>
+          <span class="endpoint">/item/</span>
+          <label for="item-id" class="hidden">id</label>
+          <input id="item-id" type="number" placeholder="example: 78" onKeyUp="clickButtonOnEnter(event, 'item-id-button')">
+        </code>
+        <button id="item-id-button" type="button" onClick="getItemByID(this.form.elements)">Go</button>
+      </form>
+    </li>
+  </ul>
+
+  <h2>Get Items by Name</h2>
+  <ul>
+    <li>Searches the latest official version of MajorMUD for items by name.</li>
+    <li>
+      <form onSubmit="suppressReloadOnEnter()">
+        <code>
+          <span>https://api.majormud.io/v/</span>
+          <label for="item-name-version" class="hidden">version</label>
+          <select id="item-name-version">
+            <option>latest</option>
+          </select>
+          <span>/items/</span>
+          <label for="item-name" class="hidden">name</label>
+          <input id="item-name" type="text" placeholder="example: greatsword" onKeyUp="clickButtonOnEnter(event, 'item-name-button')">
+        </code>
+        <button id="item-name-button" type="button" onClick="getItemsByName(this.form.elements)">Go</button>
+      </form>
+    </li>
+  </ul>
+
+</body>
+<script>
+
+  function queryAPI(endpoint) {
+    fetch(`https://api.majormud.io/${endpoint}`)
+      .then(response => response.json())
+      .then(data => console.info(data));
+  }
+
+  function suppressReloadOnEnter() {
+    return false;
+  }
+
+  function clickButtonOnEnter(event, buttonID) {
+    if (event.keyCode === 13) {
+      document.getElementById(buttonID).click();
+    }
+  }
+
+  function getItemByID(elements) {
+    let version = elements['item-id-version'].value;
+    let id = elements['item-id'].value;
+    queryAPI(`v/${version}/item/${id}`);
+  }
+
+  function getItemsByName(elements) {
+    let version = elements['item-name-version'].value;
+    let name = elements['item-name'].value;
+    queryAPI(`v/${version}/items/${name}`);
+  }
+
+</script>
+<noscript>
+  <p>Javascript is disabled and is required for the search fields on this page to work. You can still call the HTTP endpoints directly.</p>
+</noscript>
+</html>
