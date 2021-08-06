@@ -83,21 +83,13 @@ async function uploadByFunctionName(functionName) {
 //  Public Tasks
 //
 
-task('static', async() => {
-  const s3 = new aws.S3();
-  const filenames = await fs.readdir('static');
-
-  for (let filename of filenames) {
-    const parameters = {
-      Bucket: 'majormud-api',
-      Key: filename,
-      Body: await fs.readFile(`static/${filename}`)
-    }
-
-    const result = await s3.putObject(parameters).promise();
-    console.info(result);
-  }
-});
+task('index', series(
+  async function clean() { return cleanByFunctionName('index') },
+  async function compile() { return compileByFunctionName('index') },
+  async function getDependencies() { return getDependenciesByFunctionName('index') },
+  async function compress() { return compressByFunctionName('index') },
+  async function upload() { return uploadByFunctionName('index') }
+));
 
 task('get-item-by-id', series(
   async function clean() { return cleanByFunctionName('get-item-by-id') },
@@ -115,9 +107,9 @@ task('get-items-by-name', series(
   async function upload() { return uploadByFunctionName('get-items-by-name') }
 ));
 
-// cleanByFunctionName, build, package, and upload everything
+// clean, build, package, and upload everything
 task('default', parallel(
+  'index',
   'get-item-by-id',
-  'get-items-by-name',
-  'static'
+  'get-items-by-name'
 ));
