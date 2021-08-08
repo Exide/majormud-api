@@ -26,11 +26,7 @@ async function compileByFunctionName(functionName) {
     const functionCode = src(functionFile)
       .pipe(rename('index.ts'));
 
-    const sharedCode = src([
-      'src/response.ts',
-      'src/majormud.ts',
-      'src/item.ts'
-    ]);
+    const sharedCode = src('src/helpers/**/*.ts');
 
     mergeStream(functionCode, sharedCode)
       .pipe(tsProject())
@@ -83,12 +79,36 @@ async function uploadByFunctionName(functionName) {
 //  Public Tasks
 //
 
-task('index', series(
+task('get-index', series(
   async function clean() { return cleanByFunctionName('index') },
   async function compile() { return compileByFunctionName('index') },
   async function getDependencies() { return getDependenciesByFunctionName('index') },
   async function compress() { return compressByFunctionName('index') },
   async function upload() { return uploadByFunctionName('index') }
+));
+
+task('get-versions', series(
+  async function clean() { return cleanByFunctionName('get-versions') },
+  async function compile() { return compileByFunctionName('get-versions') },
+  async function getDependencies() { return getDependenciesByFunctionName('get-versions') },
+  async function compress() { return compressByFunctionName('get-versions') },
+  async function upload() { return uploadByFunctionName('get-versions') }
+));
+
+task('get-version-by-name', series(
+  async function clean() { return cleanByFunctionName('get-version-by-name') },
+  async function compile() { return compileByFunctionName('get-version-by-name') },
+  async function getDependencies() { return getDependenciesByFunctionName('get-version-by-name') },
+  async function compress() { return compressByFunctionName('get-version-by-name') },
+  async function upload() { return uploadByFunctionName('get-version-by-name') }
+));
+
+task('get-items', series(
+  async function clean() { return cleanByFunctionName('get-items') },
+  async function compile() { return compileByFunctionName('get-items') },
+  async function getDependencies() { return getDependenciesByFunctionName('get-items') },
+  async function compress() { return compressByFunctionName('get-items') },
+  async function upload() { return uploadByFunctionName('get-items') }
 ));
 
 task('get-item-by-id', series(
@@ -99,17 +119,11 @@ task('get-item-by-id', series(
   async function upload() { return uploadByFunctionName('get-item-by-id') }
 ));
 
-task('get-items-by-name', series(
-  async function clean() { return cleanByFunctionName('get-items-by-name') },
-  async function compile() { return compileByFunctionName('get-items-by-name') },
-  async function getDependencies() { return getDependenciesByFunctionName('get-items-by-name') },
-  async function compress() { return compressByFunctionName('get-items-by-name') },
-  async function upload() { return uploadByFunctionName('get-items-by-name') }
-));
-
 // clean, build, package, and upload everything
 task('default', parallel(
-  'index',
-  'get-item-by-id',
-  'get-items-by-name'
+  'get-index',
+  'get-versions',
+  'get-version-by-name',
+  'get-items',
+  'get-item-by-id'
 ));

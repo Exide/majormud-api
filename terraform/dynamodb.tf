@@ -1,3 +1,19 @@
+resource "aws_dynamodb_table" "versions" {
+  name = "majormud-versions"
+  hash_key = "name"
+
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "name"
+    type = "S"
+  }
+
+  tags = {
+    topic = "MajorMUD"
+  }
+}
+
 resource "aws_dynamodb_table" "races" {
   name = "majormud-races"
   hash_key = "id"

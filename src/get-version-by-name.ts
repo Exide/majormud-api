@@ -2,47 +2,49 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { getRequestedOrigin } from './helpers/request';
 import { OK, NotFound } from './helpers/response';
-import { MajorMUDItem } from './helpers/majormud';
+import { MajorMUDVersion } from './helpers/majormud';
 
-// Handles requests to /versions/:version/items/:id
+// Handles requests to /versions/:name
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.debug('path parameters:', event.pathParameters);
 
   // if any of these errors are thrown then check the API Gateway configuration
   if (event.pathParameters == null) throw new Error('Called without any path parameters');
-  if (event.pathParameters['version'] == null) throw new Error('Called without a "version" path parameter');
-  if (event.pathParameters['id'] == null) throw new Error('Called without an "id" path parameter');
+  if (event.pathParameters['name'] == null) throw new Error('Called without a "name" path parameter');
 
-  const version = decodeURI(event.pathParameters.version);
-  const id = parseInt(decodeURI(event.pathParameters.id));
-  const item = await getItemById(version, id);
+  const name = decodeURI(event.pathParameters.name);
+  const version = await getVersionByName(name);
+  console.debug('version:', version);
   const requestedOrigin = getRequestedOrigin(event);
 
-  if (item) {
+  if (version) {
     const _links = {
       self: {
-        href: `${requestedOrigin}/versions/${version}/items/${id}`
+        href: `${requestedOrigin}/versions/${name}`
+      },
+      items: {
+        href: `${requestedOrigin}/versions/${name}/items`,
+        description: 'List all available items for this version.'
       }
     };
-    return OK({ _links, item });
+    return OK({ _links, version });
   } else {
     const _links = {
       self: {
-        href: `${requestedOrigin}/versions/${version}/items/${id}`
+        href: `${requestedOrigin}/versions/${name}`
       }
     };
-    const error = `No item found in version ${version} matching the ID: ${id}`;
+    const error = `No version found matching the name: ${name}`;
     return NotFound({ _links, error });
   }
 }
 
-async function getItemById(version: string, id: number): Promise<MajorMUDItem | undefined> {
+async function getVersionByName(name: string): Promise<MajorMUDVersion | undefined> {
   const parameters = {
-    TableName: 'majormud-items',
+    TableName: 'majormud-versions',
     Key: {
-      id: id,
-      version: version
+      name: name
     }
   };
 
@@ -50,5 +52,5 @@ async function getItemById(version: string, id: number): Promise<MajorMUDItem | 
   const result = await dbClient.get(parameters).promise();
   if (result.Item === undefined) return;
 
-  return result.Item as unknown as MajorMUDItem;
+  return result.Item as unknown as MajorMUDVersion;
 }
