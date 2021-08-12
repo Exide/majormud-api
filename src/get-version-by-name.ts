@@ -15,7 +15,6 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   const name = decodeURI(event.pathParameters.version);
   const version = await getVersionByName(name);
-  console.debug('version:', version);
   const requestedOrigin = getRequestedOrigin(event);
 
   if (version) {
