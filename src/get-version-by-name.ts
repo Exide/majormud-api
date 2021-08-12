@@ -4,16 +4,16 @@ import { getRequestedOrigin } from './helpers/request';
 import { OK, NotFound } from './helpers/response';
 import { MajorMUDVersion } from './helpers/majormud';
 
-// Handles requests to /versions/:name
+// Handles requests to /versions/:version
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.debug('path parameters:', event.pathParameters);
 
   // if any of these errors are thrown then check the API Gateway configuration
   if (event.pathParameters == null) throw new Error('Called without any path parameters');
-  if (event.pathParameters['name'] == null) throw new Error('Called without a "name" path parameter');
+  if (event.pathParameters.version == null) throw new Error('Called without a "version" path parameter');
 
-  const name = decodeURI(event.pathParameters.name);
+  const name = decodeURI(event.pathParameters.version);
   const version = await getVersionByName(name);
   console.debug('version:', version);
   const requestedOrigin = getRequestedOrigin(event);

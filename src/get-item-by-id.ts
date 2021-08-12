@@ -11,8 +11,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   // if any of these errors are thrown then check the API Gateway configuration
   if (event.pathParameters == null) throw new Error('Called without any path parameters');
-  if (event.pathParameters['version'] == null) throw new Error('Called without a "version" path parameter');
-  if (event.pathParameters['id'] == null) throw new Error('Called without an "id" path parameter');
+  if (event.pathParameters.version == null) throw new Error('Called without a "version" path parameter');
+  if (event.pathParameters.id == null) throw new Error('Called without an "id" path parameter');
 
   const version = decodeURI(event.pathParameters.version);
   const id = parseInt(decodeURI(event.pathParameters.id));

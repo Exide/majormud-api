@@ -13,7 +13,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   // if any of these errors are thrown then check the API Gateway configuration
   if (event.pathParameters == null) throw new Error('Called without any path parameters');
-  if (event.pathParameters['version'] == null) throw new Error('Called without a "version" path parameter');
+  if (event.pathParameters.version == null) throw new Error('Called without a "version" path parameter');
 
   const version = decodeURI(event.pathParameters.version);
 
@@ -47,24 +47,25 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 }
 
 async function getItems(version: string, nameKeyword?: string): Promise<MajorMUDItem[]> {
-  let parameters: DynamoDB.DocumentClient.ScanInput = {
-    TableName: 'majormud-items',
-    FilterExpression: '#version = :version',
-    ExpressionAttributeNames: {
-      '#version': 'version'
-    },
-    ExpressionAttributeValues: {
-      ':version': version
-    }
-  };
+  const requiredAttributeNames: DynamoDB.DocumentClient.ExpressionAttributeNameMap = { '#version': 'version' };
+  const requiredAttributeValues: DynamoDB.DocumentClient.ExpressionAttributeValueMap = { ':version': version };
+  let optionalAttributeNames: DynamoDB.DocumentClient.ExpressionAttributeNameMap = {};
+  let optionalAttributeValues: DynamoDB.DocumentClient.ExpressionAttributeValueMap = {};
+  let filterExpression: string = '#version = :version';
 
   if (nameKeyword) {
-    parameters['FilterExpression'] += ' and contains(#name, :keyword)';
-    parameters['ExpressionAttributeNames'] = {}; // hack to make the compiler stop complaining; its defined directly above
-    parameters['ExpressionAttributeNames']['#name'] = 'name';
-    parameters['ExpressionAttributeValues'] = {}; // hack to make the compiler stop complaining; its defined directly above
-    parameters['ExpressionAttributeValues'][':keyword'] = nameKeyword;
+    filterExpression += ' and contains(#name, :keyword)';
+    optionalAttributeNames['#name'] = 'name';
+    optionalAttributeValues[':keyword'] = nameKeyword;
   }
+
+  let parameters: DynamoDB.DocumentClient.ScanInput = {
+    TableName: 'majormud-items',
+    FilterExpression: filterExpression,
+    ExpressionAttributeNames: { ...requiredAttributeNames, ...optionalAttributeNames },
+    ExpressionAttributeValues: { ...requiredAttributeValues, ...optionalAttributeValues }
+  };
+  console.debug('scan parameters:', parameters);
 
   const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.scan(parameters).promise();
