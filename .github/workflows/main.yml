@@ -1,0 +1,29 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run static analysis
+        run: npm run test:static
+      - name: Run unit tests
+        run: npm run test:unit
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the project
+        run: npm run build
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Package the lambda
+        run: npm run package
