@@ -8,22 +8,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Install dependencies
+        run: npm install
       - name: Run static analysis
         run: npm run test:static
       - name: Run unit tests
         run: npm run test:unit
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
       - name: Build the project
         run: npm run build
-  package:
-    runs-on: ubuntu-latest
-    steps:
       - name: Package the lambda
         run: npm run package
