@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "majormud_data_full_access" {
       "dynamodb:UpdateItem"
     ]
     resources = [
-      "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/majormud-*"
+      "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/majormud-*"
     ]
   }
 
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "majormud_data_full_access" {
       "dynamodb:Query"
     ]
     resources = [
-      "arn:aws:dynamodb:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/majormud-*/index/*"
+      "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/majormud-*/index/*"
     ]
   }
 }

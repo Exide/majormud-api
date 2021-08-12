@@ -1,10 +1,15 @@
-variable "aws_region" {
-  default = "us-west-2"
+provider "aws" {
+  version = "~> 3.0"
+  region  = "us-west-2"
 }
 
-provider "aws" {
-  version = "~> 2.0"
-  region  = var.aws_region
+terraform {
+  backend "s3" {
+    region = "us-west-2"
+    bucket = "majormud-api"
+    key = "terraform"
+    dynamodb_table = "majormud-api-terraform-lock"
+  }
 }
 
 data "aws_caller_identity" "current" {}

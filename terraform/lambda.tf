@@ -6,7 +6,7 @@ resource "aws_lambda_function" "get_index" {
   function_name = "majormud-api-get-index"
   runtime = "nodejs14.x"
   handler = "index.handler"
-  filename = "lambda.zip"
+  filename = "../dist/get-index.zip"
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -19,7 +19,7 @@ resource "aws_lambda_permission" "get_index" {
   action = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_index.arn
   principal = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_rest_api.majormud_api.execution_arn}/*/${aws_api_gateway_method.get_index.http_method}"
+  source_arn = "${aws_api_gateway_rest_api.majormud_api.execution_arn}/*/${aws_api_gateway_method.get_index.http_method}/"
 }
 
 // ----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ resource "aws_lambda_function" "get_versions" {
   function_name = "majormud-api-get-versions"
   runtime = "nodejs14.x"
   handler = "index.handler"
-  filename = "lambda.zip"
+  filename = "../dist/get-versions.zip"
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -54,7 +54,7 @@ resource "aws_lambda_function" "get_version_by_name" {
   function_name = "majormud-api-get-version-by-name"
   runtime = "nodejs14.x"
   handler = "index.handler"
-  filename = "lambda.zip"
+  filename = "../dist/get-version-by-name.zip"
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -78,7 +78,7 @@ resource "aws_lambda_function" "get_items" {
   function_name = "majormud-api-get-items"
   runtime = "nodejs14.x"
   handler = "index.handler"
-  filename = "lambda.zip"
+  filename = "../dist/get-items.zip"
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -102,7 +102,7 @@ resource "aws_lambda_function" "get_item_by_id" {
   function_name = "majormud-api-get-item-by-id"
   runtime = "nodejs14.x"
   handler = "index.handler"
-  filename = "lambda.zip"
+  filename = "../dist/get-item-by-id.zip"
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
