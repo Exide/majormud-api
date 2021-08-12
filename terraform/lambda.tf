@@ -7,6 +7,7 @@ resource "aws_lambda_function" "get_index" {
   runtime = "nodejs14.x"
   handler = "index.handler"
   filename = "../dist/get-index.zip"
+  source_code_hash = filebase64sha256("../dist/get-index.zip")
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -31,6 +32,7 @@ resource "aws_lambda_function" "get_versions" {
   runtime = "nodejs14.x"
   handler = "index.handler"
   filename = "../dist/get-versions.zip"
+  source_code_hash = filebase64sha256("../dist/get-versions.zip")
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -55,6 +57,7 @@ resource "aws_lambda_function" "get_version_by_name" {
   runtime = "nodejs14.x"
   handler = "index.handler"
   filename = "../dist/get-version-by-name.zip"
+  source_code_hash = filebase64sha256("../dist/get-version-by-name.zip")
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -79,6 +82,7 @@ resource "aws_lambda_function" "get_items" {
   runtime = "nodejs14.x"
   handler = "index.handler"
   filename = "../dist/get-items.zip"
+  source_code_hash = filebase64sha256("../dist/get-items.zip")
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
@@ -103,6 +107,7 @@ resource "aws_lambda_function" "get_item_by_id" {
   runtime = "nodejs14.x"
   handler = "index.handler"
   filename = "../dist/get-item-by-id.zip"
+  source_code_hash = filebase64sha256("../dist/get-item-by-id.zip")
   timeout = 60
   role = aws_iam_role.majormud_api_lambda.arn
   tags = {
