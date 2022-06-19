@@ -61,7 +61,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   const links = {
     self: {
-      href: `${requestedOrigin}/versions/${version}/items`
+      href: `${requestedOrigin}${event.path}${nameKeyword ? '?name='+nameKeyword : ''}`
     },
     search: {
       by_name: `${requestedOrigin}/versions/${version}/items?name={KEYWORD}`
