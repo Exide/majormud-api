@@ -11,10 +11,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.scan({ TableName: 'majormud-versions' }).promise();
   const versions: MajorMUDVersion[] = (result.Items === undefined ? [] : result.Items as unknown as MajorMUDVersion[])
-    .map(version => {
-      version.uri = `${requestedOrigin}/versions/${version.name}`;
-      return version;
-    })
+    .map(version => ({
+      name: version.name,
+      uri: `${requestedOrigin}/versions/${version.name}`,
+      author: version.author,
+      created_at: version.created_at,
+      updated_at: version.updated_at
+    }))
   const links = {
     self: {
       href: `${requestedOrigin}/versions`

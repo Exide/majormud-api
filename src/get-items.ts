@@ -48,10 +48,16 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const result = await dbClient.scan(parameters).promise();
   const results = result.Items === undefined ? [] : result.Items;
   const items: MajorMUDItem[] = (results as unknown as MajorMUDItem[])
-    .map(item => {
-      item.uri = `${requestedOrigin}/versions/${version}/items/${item.id}`;
-      return item;
-    });
+    .map(item => ({
+      id: item.id,
+      uri: `${requestedOrigin}/versions/${version}/items/${item.id}`,
+      name: item.name,
+      description: item.description,
+      type: item.type,
+      weight: item.weight,
+      created_at: item.created_at,
+      updated_at: item.updated_at
+    }));
 
   const links = {
     self: {
