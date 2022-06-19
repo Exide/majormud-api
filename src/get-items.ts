@@ -49,8 +49,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const results = result.Items === undefined ? [] : result.Items;
   const items: MajorMUDItem[] = (results as unknown as MajorMUDItem[])
     .map(item => ({
-      id: item.id,
       uri: `${requestedOrigin}/versions/${version}/items/${item.id}`,
+      id: item.id,
       name: item.name,
       description: item.description,
       type: item.type,

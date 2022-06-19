@@ -12,8 +12,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const result = await dbClient.scan({ TableName: 'majormud-versions' }).promise();
   const versions: MajorMUDVersion[] = (result.Items === undefined ? [] : result.Items as unknown as MajorMUDVersion[])
     .map(version => ({
-      name: version.name,
       uri: `${requestedOrigin}/versions/${version.name}`,
+      name: version.name,
       author: version.author,
       created_at: version.created_at,
       updated_at: version.updated_at
