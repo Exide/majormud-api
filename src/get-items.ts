@@ -46,19 +46,19 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.scan(parameters).promise();
-  const items: MajorMUDItem[] = result.Items === undefined ? [] : result.Items as unknown as MajorMUDItem[];
+  const results = result.Items === undefined ? [] : result.Items;
+  const items: MajorMUDItem[] = (results as unknown as MajorMUDItem[])
+    .map(item => {
+      item.uri = `${requestedOrigin}/versions/${version}/items/${item.id}`;
+      return item;
+    });
 
   const links = {
     self: {
       href: `${requestedOrigin}/versions/${version}/items`
     },
-    id: {
-      href: `${requestedOrigin}/versions/${version}/items/:id`,
-      description: 'Return a specific item by ID.'
-    },
-    name: {
-      href: `${requestedOrigin}/versions/${version}/items?name=keyword`,
-      description: 'List all items that contain the keyword in the name.'
+    search: {
+      by_name: `${requestedOrigin}/versions/${version}/items?name={KEYWORD}`
     }
   }
 
