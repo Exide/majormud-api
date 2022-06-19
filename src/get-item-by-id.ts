@@ -16,28 +16,9 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   const version = decodeURI(event.pathParameters.version);
   const id = parseInt(decodeURI(event.pathParameters.id));
-  const item = await getItemById(version, id);
   const requestedOrigin = getRequestedOrigin(event);
 
-  if (item) {
-    const _links = {
-      self: {
-        href: `${requestedOrigin}/versions/${version}/items/${id}`
-      }
-    };
-    return OK({ _links, item });
-  } else {
-    const _links = {
-      self: {
-        href: `${requestedOrigin}/versions/${version}/items/${id}`
-      }
-    };
-    const error = `No item found in version ${version} matching the ID: ${id}`;
-    return NotFound({ _links, error });
-  }
-}
-
-async function getItemById(version: string, id: number): Promise<MajorMUDItem | undefined> {
+  const dbClient = new DynamoDB.DocumentClient();
   const parameters = {
     TableName: 'majormud-items',
     Key: {
@@ -45,10 +26,17 @@ async function getItemById(version: string, id: number): Promise<MajorMUDItem | 
       version: version
     }
   };
-
-  const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.get(parameters).promise();
-  if (result.Item === undefined) return;
+  const item: MajorMUDItem = result.Item as unknown as MajorMUDItem;
+  const links = {
+    self: {
+      href: `${requestedOrigin}/versions/${version}/items/${id}`
+    }
+  };
 
-  return result.Item as unknown as MajorMUDItem;
+  if (item) {
+    return OK({ links, item });
+  } else {
+    return NotFound(`No item found in version ${version} matching the ID: ${id}`);
+  }
 }

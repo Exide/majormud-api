@@ -22,31 +22,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     nameKeyword = decodeURI(event.queryStringParameters.name);
   }
 
-  const items = await getItems(version, nameKeyword);
-
   const requestedOrigin = getRequestedOrigin(event);
-  const _links = {
-    self: {
-      href: `${requestedOrigin}/versions/${version}/items`
-    },
-    id: {
-      href: `${requestedOrigin}/versions/${version}/items/:id`,
-      description: 'Return a specific item by ID.'
-    },
-    name: {
-      href: `${requestedOrigin}/versions/${version}/items?name=keyword`,
-      description: 'List all items that contain the keyword in the name.'
-    }
-  }
 
-  if (nameKeyword) {
-    _links['self']['href'] += `?name=${nameKeyword}`;
-  }
-
-  return OK({ _links, items });
-}
-
-async function getItems(version: string, nameKeyword?: string): Promise<MajorMUDItem[]> {
   const requiredAttributeNames: DynamoDB.DocumentClient.ExpressionAttributeNameMap = { '#version': 'version' };
   const requiredAttributeValues: DynamoDB.DocumentClient.ExpressionAttributeValueMap = { ':version': version };
   let optionalAttributeNames: DynamoDB.DocumentClient.ExpressionAttributeNameMap = {};
@@ -69,7 +46,21 @@ async function getItems(version: string, nameKeyword?: string): Promise<MajorMUD
 
   const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.scan(parameters).promise();
-  if (result.Items === undefined) return [];
+  const items: MajorMUDItem[] = result.Items === undefined ? [] : result.Items as unknown as MajorMUDItem[];
 
-  return result.Items.map(i => i as unknown as MajorMUDItem);
+  const links = {
+    self: {
+      href: `${requestedOrigin}/versions/${version}/items`
+    },
+    id: {
+      href: `${requestedOrigin}/versions/${version}/items/:id`,
+      description: 'Return a specific item by ID.'
+    },
+    name: {
+      href: `${requestedOrigin}/versions/${version}/items?name=keyword`,
+      description: 'List all items that contain the keyword in the name.'
+    }
+  }
+
+  return OK({ links, items });
 }

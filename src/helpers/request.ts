@@ -1,4 +1,4 @@
-import {APIGatewayProxyEvent} from "aws-lambda";
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 export function getRequestedOrigin(event: APIGatewayProxyEvent): string {
   const protocol = 'https';

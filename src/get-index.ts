@@ -6,7 +6,7 @@ import { OK } from './helpers/response';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const requestedOrigin = getRequestedOrigin(event);
-  const _links = {
+  const links = {
     self: {
       href: requestedOrigin
     },
@@ -16,5 +16,5 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
   }
 
-  return OK({ _links });
+  return OK({ links });
 }

@@ -14,42 +14,28 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   if (event.pathParameters.version == null) throw new Error('Called without a "version" path parameter');
 
   const name = decodeURI(event.pathParameters.version);
-  const version = await getVersionByName(name);
   const requestedOrigin = getRequestedOrigin(event);
 
-  if (version) {
-    const _links = {
-      self: {
-        href: `${requestedOrigin}/versions/${name}`
-      },
-      items: {
-        href: `${requestedOrigin}/versions/${name}/items`,
-        description: 'List all available items for this version.'
-      }
-    };
-    return OK({ _links, version });
-  } else {
-    const _links = {
-      self: {
-        href: `${requestedOrigin}/versions/${name}`
-      }
-    };
-    const error = `No version found matching the name: ${name}`;
-    return NotFound({ _links, error });
-  }
-}
-
-async function getVersionByName(name: string): Promise<MajorMUDVersion | undefined> {
+  const dbClient = new DynamoDB.DocumentClient();
   const parameters = {
     TableName: 'majormud-versions',
-    Key: {
-      name: name
-    }
+    Key: { name }
   };
-
-  const dbClient = new DynamoDB.DocumentClient();
   const result = await dbClient.get(parameters).promise();
-  if (result.Item === undefined) return;
+  const version: MajorMUDVersion = result.Item as unknown as MajorMUDVersion;
+  const links = {
+    self: {
+      href: `${requestedOrigin}/versions/${name}`
+    },
+    items: {
+      href: `${requestedOrigin}/versions/${name}/items`,
+      description: 'List all available items for this version.'
+    }
+  }
 
-  return result.Item as unknown as MajorMUDVersion;
+  if (version) {
+    return OK({ links, version });
+  } else {
+    return NotFound(`No version found matching the name: ${name}`);
+  }
 }
