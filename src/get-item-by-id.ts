@@ -30,7 +30,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const item: MajorMUDItem = result.Item as unknown as MajorMUDItem;
   const links = {
     self: {
-      href: `${requestedOrigin}/versions/${version}/items/${id}`
+      href: `${requestedOrigin}${event.path}`
     }
   };
 

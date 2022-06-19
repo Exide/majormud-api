@@ -20,7 +20,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }))
   const links = {
     self: {
-      href: `${requestedOrigin}/versions`
+      href: `${requestedOrigin}${event.path}`
     }
   };
 

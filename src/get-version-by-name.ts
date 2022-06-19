@@ -25,7 +25,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const version: MajorMUDVersion = result.Item as unknown as MajorMUDVersion;
   const links = {
     self: {
-      href: `${requestedOrigin}/versions/${name}`
+      href: `${requestedOrigin}${event.path}`
     },
     items: {
       href: `${requestedOrigin}/versions/${name}/items`,

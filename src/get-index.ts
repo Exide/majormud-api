@@ -8,7 +8,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   const requestedOrigin = getRequestedOrigin(event);
   const links = {
     self: {
-      href: requestedOrigin
+      href: `${requestedOrigin}${event.path}`
     },
     versions: {
       href: `${requestedOrigin}/versions`,
